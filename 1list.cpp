@@ -4,35 +4,42 @@
 
 using namespace std;
 
-template <class S>
+class Object {
+
+};
+
 class Storage {
 private:
 	int n;//размер
 	int k;//количество элементов
-	S** st;//динамический массив указателей на S
+	Object** st;//динамический массив указателей на Object
 public:
 	Storage() {
-		st = new S*[2];
+		st = new Object*[2];
 		n = 2;
 		k = 0;
 	}
 	Storage(int size) {
-		st = new S * [size];
+		st = new Object * [size];
 		n = size;
 		k = 0;
 	}
-	~Storage() {
+	~Storage()
+	{
+		for (int i = 0; i < k; i++)
+			if (st[i] != nullptr)
+				delete (st[i]);
 		delete[] st;
 	}
 
-	void add(S* new_el) {
+	void add(Object* new_el) {
 		if (k < n) {
 			st[k] = new_el;
 			k = k + 1;
 		}
 		else {
-			n = n + 1;
-			S** st_ = new S*[n];
+			n = n*2;
+			Object** st_ = new Object*[n];
 			for (int i = 0; i < k; ++i)
 				st_[i] = st[i];
 			st_[k] = new_el;
@@ -45,7 +52,7 @@ public:
 			st[i] = st[i + 1];
 		k = k - 1;
 	}
-	S* get_el(int ind) {
+	Object* get_el(int ind) {
 		return st[ind];
 	}
 	int get_count() {
@@ -55,5 +62,11 @@ public:
 
 
 int main() {
+	Storage st;
+	for (int i = 0; i < st.get_count(); ++i)
+		st.add(new Object());
+	//for (int i = 0; i < st.get_count(); ++i)
+		//arr.get_el(i).some_method();
+
 	return 0;
 }

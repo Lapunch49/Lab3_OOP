@@ -25,12 +25,12 @@ private:
 	Object** st; // динамический массив указателей на Object
 public:
 	Storage() {
-		st = new Object*[2];
-		n = 2;
+		st = new Object* [1];
+		n = 1;
 		k = 0;
 	}
 	Storage(int size) {
-		st = new Object * [size];
+		st = new Object* [size];
 		n = size;
 		k = 0;
 	}
@@ -43,17 +43,23 @@ public:
 	}
 
 	void add(Object* new_el) {
-		if (k < n) {
+		if (k < n) { // если место есть, просто вставляем в конец
 			st[k] = new_el;
 			k = k + 1;
 		}
-		else {
-			n = n * 2;
+		else { // изменяем размер массива - увеличиваем в 2 раза
+			//n = n + 1;
+			n = n * 2; // чтобы не перекопировать много раз
 			Object** st_ = new Object*[n];
 			for (int i = 0; i < k; ++i)
 				st_[i] = st[i];
 			st_[k] = new_el;
 			k = k + 1;
+			// мб очистить память
+			for (int i = 0; i < k; i++)
+				if (st[i] != nullptr)
+					delete (st[i]);
+			////////////////
 			st = st_;
 		}
 	}
@@ -61,6 +67,14 @@ public:
 		for (int i = ind; i < k - 1; ++i)
 			st[i] = st[i + 1];
 		k = k - 1;
+		st[k] = nullptr;
+	}
+	void del_withDelObj(int ind) {
+		delete st[ind]; // ? будет ли корректно работать 
+		for (int i = ind; i < k - 1; ++i)
+			st[i] = st[i + 1];
+		k = k - 1;
+		st[k] = nullptr;
 	}
 	Object* get_el(int ind) {
 		return st[ind];
@@ -68,6 +82,7 @@ public:
 	int get_count() {
 		return k;
 	}
+	// мб get_size()
 };
  // классы-потомки базового
 class Point: public Object {

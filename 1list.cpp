@@ -63,6 +63,14 @@ public:
 			st = st_;
 		}
 	}
+	void insert(int ind, Object* new_obj) { 
+		// вставляем в конец и меняем местами с элементом, имеющим нужный индекс
+		add(new_obj);
+		Object* tmp = st[ind];
+		st[ind] = st[k];
+		st[k] = tmp;
+		delete tmp;
+	}
 	void del(int ind) {
 		for (int i = ind; i < k - 1; ++i)
 			st[i] = st[i + 1];
@@ -82,7 +90,9 @@ public:
 	int get_count() {
 		return k;
 	}
-	// мб get_size()
+	int get_size() {
+		return n;
+	}
 };
  // классы-потомки базового
 class Point: public Object {

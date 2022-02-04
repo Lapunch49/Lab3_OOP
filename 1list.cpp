@@ -10,12 +10,13 @@ using namespace std;
 class Object { // базовый абстрактный класс
 public:
 	Object() {
-		printf("Object() ");
+		printf("Object()");
 	}
 	virtual string classname() = NULL;
 	virtual ~Object() {
 		printf("~Object()\n");
 	}
+	virtual void someMethod() = NULL;
 };
 
 class Storage { // класс хранилища
@@ -55,11 +56,6 @@ public:
 				st_[i] = st[i];
 			st_[k] = new_el;
 			k = k + 1;
-			// мб очистить память
-			for (int i = 0; i < k; i++)
-				if (st[i] != nullptr)
-					delete (st[i]);
-			////////////////
 			st = st_;
 		}
 	}
@@ -69,7 +65,6 @@ public:
 		Object* tmp = st[ind];
 		st[ind] = st[k];
 		st[k] = tmp;
-		delete tmp;
 	}
 	void del(int ind) {
 		for (int i = ind; i < k - 1; ++i)
@@ -77,8 +72,8 @@ public:
 		k = k - 1;
 		st[k] = nullptr;
 	}
-	void del_withDelObj(int ind) {
-		delete st[ind]; // ? будет ли корректно работать 
+	void delWithDelObj(int ind) {
+		// delete st[ind]; // ? будет ли корректно работать 
 		for (int i = ind; i < k - 1; ++i)
 			st[i] = st[i + 1];
 		k = k - 1;
@@ -101,7 +96,8 @@ class Point: public Object {
 public:
 	Point() {
 		printf("Point()");
-		x = 0; y = 0;
+		x = rand() % 200 - 100; 
+		y = rand() % 200 - 100;
 	}
 	Point(int x, int y) {
 		printf("Point(int x, int y)");
@@ -113,23 +109,33 @@ public:
 		return "Point";
 	}
 	int get_x() {
-		printf("Point::get_x()\n");
+		printf("Point::get_x()->%d\n",x);
 		return x;
 	}
 	int get_y() {
-		printf("Point::get_y()\n");
+		printf("Point::get_y()->%d\n",y);
 		return y;
 	}
 	void set_x(int new_x) {
-		printf("Point::set_x(int new_x)\n");
+		printf("Point::set_x(int new_x)->%d-->%d\n", x, new_x);
 		x = new_x;
 	}
 	void set_y(int new_y) {
-		printf("Point::set_y(int new_y)\n");
+		printf("Point::set_y(int new_y)->%d-->%d\n", y, new_y);
 		y = new_y;
 	}
 	~Point() {
-		printf("~Point() ");
+		printf("~Point()");
+	}
+	void someMethod() {
+		int rand_num = rand() % 5;
+		switch (rand_num) {
+		case 0: { classname(); break; }
+		case 1: { get_x(); break; }
+		case 2: { get_y(); break; }
+		case 3: { set_x(rand()%100); break; }
+		default: { set_y(rand()%100); break; }
+		}
 	}
 };
 
@@ -137,11 +143,11 @@ class Circle : public Point {
 	int r;
 public:
 	Circle() {
-		printf("Circle()\n");
+		printf("Circle()");
 		r = rand() % 100;
 	}
 	Circle(int rad) {
-		printf("Circle(int rad)\n");
+		printf("Circle(int rad)");
 		if (rad >= 0)
 			r = rad;
 		else r = rand() % 100;
@@ -151,24 +157,36 @@ public:
 		return "Circle";
 	}
 	int get_r() {
-		printf("Circle::get_r()\n");
+		printf("Circle::get_r()->%d\n",r);
 		return r;
 	}
 	void set_r(int new_r) {
-		printf("CCircle::set_r(int new_r)\n");
+		printf("Circle::set_r(int new_r)->%d-->%d\n", r, new_r);
 		r = new_r;
 	}
 	void calc_diameter() {
-		printf("The diameter is %d\n", 2 * r);
+		printf("Circle: the diameter is %d\n", 2 * r);
 	}
 	void calc_perimeter() {
-		printf("The perimeter of the circle is %f\n", 2 * M_PI * r);
+		printf("Circle: the perimeter is %f\n", 2 * M_PI * r);
 	}
 	void calc_square() {
-		printf("The square of the circle is %f\n", M_PI * r * r);
+		printf("Circle: the square is %f\n", M_PI * r * r);
 	}
 	~Circle() {
-		printf("~Circle() ");
+		printf("~Circle()");
+	}
+	void someMethod() {
+		int rand_num = rand() % 10;
+		switch (rand_num) {
+		case 0: case 1: case 2: case 3:
+		case 4: { printf("Circle::"); Point::someMethod(); break; }
+		case 5: { get_r(); break; }
+		case 6: { set_r(rand()%100); break; }
+		case 7: { calc_diameter(); break; }
+		case 8: { calc_perimeter(); break; }
+		default: { calc_square(); break; }
+		}
 	}
 };
 
@@ -177,12 +195,12 @@ class Rectangle : public Point {
 	int w; // ширина
 public:
 	Rectangle() {
-		printf("Rectangle()\n");
+		printf("Rectangle()");
 		l = rand() % 100;
 		w = rand() % 100;
 	}
 	Rectangle(int length, int weigth) {
-		printf("Rectangle()\n");
+		printf("Rectangle()");
 		if (length >= 0)
 			l = length;
 		else l = rand() % 100;
@@ -214,14 +232,27 @@ public:
 	}
 	void calc_perimeter() {
 		int P = 2 * (l + w);
-		printf("The perimeter of the rectangle is %d\n", P);
+		printf("Rectangle:: the perimeter is %d\n", P);
 	}
 	void calc_square() {
 		int S = l * w;
-		printf("The square of the rectangle is %d\n", S);
+		printf("Rectangle:: the square is %d\n", S);
 	}
 	~Rectangle() {
 		printf("~Rectangle()");
+	}
+	void someMethod() {
+		int rand_num = rand() % 11;
+		switch (rand_num) {
+		case 0: case 1: case 2: case 3:
+		case 4: { printf("Rectangle::"); Point::someMethod(); break; }
+		case 5: { get_l(); break; }
+		case 6: { get_w(); break; }
+		case 7: { set_l(rand() % 100); break; }
+		case 8: { set_w(rand() % 100); break; }
+		case 9: { calc_perimeter(); break; }
+		default: { calc_square(); break; }
+		}
 	}
 };
 
@@ -229,13 +260,13 @@ class Triangle : public Object {
 	int a,b,c; // длины сторон
 public:
 	Triangle() {
-		printf("Triangle()\n");
+		printf("Triangle()");
 		a = rand() % 100;
 		b = rand() % 100;
 		c = rand() % 100;
 	}
 	Triangle(int A, int B, int C) {
-		printf("Triangle()\n");
+		printf("Triangle(int A, int B, int C)");
 		a = rand() % 100;
 		b = rand() % 100;
 		c = rand() % 100;
@@ -267,27 +298,55 @@ public:
 	}
 	int calc_perimeter() {
 		int P = a + b + c;
-		printf("The perimeter of the triangle is %d\n", P);
+		printf("Triangle:: the perimeter is %d\n", P);
 		return P;
 	}
 	float calc_square() {
 		float p = (calc_perimeter())/2;
 		float S = sqrt(p * (p - a) * (p - b) * (p - c));
-		printf("The square of the triangle is %f\n", S);
+		printf("Triangle:: the square is %f\n", S);
 		return S;
 	}
 	void get_r_and_R() {
 		float p = (calc_perimeter()) / 2;
 		float S = calc_square();
-		float r = S / p;
-		float R = a * b * c / 4 / S;
-		printf("The radius of inscribed circle is %f\n", r);
-		printf("The radius of circumscribed circle is %f\n", r);
+		float r = 0;
+		float R = 0;
+		if (p != 0)
+			r = S / p;
+		if (S != 0 )
+			R = a * b * c / 4 / S;
+		printf("Triangle:: the radius of inscribed circle is %f\n", r);
+		printf("And the radius of circumscribed circle is %f\n", r);
 	}
 	~Triangle() {
-		printf("~Triangle() ");
+		printf("~Triangle()");
+	}
+	void someMethod() {
+		int rand_num = rand() % 8;
+		switch (rand_num) {
+		case 0: { classname(); break; }
+		case 1: { get_a(); break; }
+		case 2: { get_b(); break; }
+		case 3: { get_c(); break; }
+		case 4: { set_abc(rand()%100, rand() % 100, rand() % 100); break; }
+		case 5: { calc_perimeter(); break; }
+		case 6: { calc_square(); break; }
+		default: {get_r_and_R(); break; }
+		}
 	}
 };
+
+Object* someObj() { // возвращает объект случайно выбранного класса 
+	int rand_num = rand() % 4;
+	switch (rand_num)
+	{
+	case 0: return new Circle();
+	case 1: return new Rectangle();
+	case 2: return new Triangle();
+	default: return new Point();
+	}
+}
 
 //class Animal : public Object {
 //	string name;
@@ -313,13 +372,40 @@ public:
 //};
 
 int main() {
+	unsigned int start_time = clock();
 	srand(time(NULL));
 	// создаем хранилище
-	Storage st(10);
-	//for (int i = 0; i < st.get_count(); ++i)
-	//	st.add(new Object());
-	//for (int i = 0; i < st.get_count(); ++i)
-		//arr.get_el(i).some_method();
-	
+	Storage myStor(100);
+	// заполняем какими-то объектами
+	for (int i = 0; i < myStor.get_size(); ++i) {
+		myStor.add(someObj());
+		printf("\n");
+	}
+	printf("-----------------------------------------------\n");
+	// вызываем случайные методы у каждого объекта
+	for (int i = 0; i < myStor.get_count(); ++i)
+		(myStor.get_el(i))->someMethod();
+	printf("-----------------------------------------------\n");
+	// запускаем цикл из 1000 случайных действий(удаление и уничтожение объекта из хранилища, 
+	// добавление в конец или вставка по индексу нового объекта, запуск любого метода у случайного объекта)
+	for (int i = 0; i < 100; ++i) {
+		printf("%3d:", i);
+		int rand_num = rand() % 5; 
+		int ind = rand() % (myStor.get_count()); // индекс элемента, с которым что-то произойдет (кроме случая 2)
+		switch (rand_num)
+		{
+		case 0: {myStor.del(ind); break; }
+		//case 1: {myStor.delWithDelObj(ind); break; }
+		case 2: {myStor.add(someObj()); printf("\n"); break; }
+		default: {myStor.insert(ind, someObj()); break; }
+		case 1: {myStor.insert(ind,someObj()); break; }
+		//default: {(myStor.get_el(ind))->someMethod(); break; }
+		}
+	}
+
+	printf("-----------------------------------------------\n");
+	unsigned int end_time = clock();
+	unsigned int search_time = end_time - start_time;
+	printf("Time of program`s execution is %d ms\n", search_time);
 	return 0;
 }

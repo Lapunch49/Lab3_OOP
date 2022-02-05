@@ -46,7 +46,6 @@ public:
 		delete[] st;
 		//delete st;
 	}
-
 	void add(Object* new_el) {
 		if (k < n) { // если место есть, просто вставляем в конец
 			st[k] = new_el;
@@ -60,7 +59,7 @@ public:
 				st_[i] = st[i];
 			st_[k] = new_el;
 			k = k + 1;
-			for (int i = k; i < n; ++i) /// добавлено
+			for (int i = k; i < n; ++i)
 				st_[i] = nullptr;
 			st = st_;
 		}
@@ -365,29 +364,6 @@ Object* someObj() { // возвращает объект случайно выбранного класса
 	default: return new Point();
 	}
 }
-
-//class Animal : public Object {
-//	string name;
-//public:
-//	Animal() {
-//		printf("Animal() ");
-//		name = "";
-//	}
-//	string classname() {
-//		printf("Animal::classname()\n");
-//		return "Animal";
-//	}
-//	void get_name() {
-//		cout << "The name of " << classname() << " is " << name << endl;
-//	}
-//	virtual void sound() = NULL;
-//};
-//
-//class Cat : public Animal {
-//	string voice = "mew-mew";
-//public:
-//	//void s
-//};
 
 int main() {
 	unsigned int start_time = clock();

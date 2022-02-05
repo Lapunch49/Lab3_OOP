@@ -27,6 +27,7 @@ private:
 public:
 	Storage() {
 		st = new Object* [1];
+		st[0] = nullptr; /// добавлено
 		n = 1;
 		k = 0;
 	}
@@ -34,6 +35,8 @@ public:
 		st = new Object* [size];
 		n = size;
 		k = 0;
+		for (int i = 0; i < n; ++i) // Добавлено
+			st[i] = nullptr;
 	}
 	~Storage()
 	{
@@ -41,6 +44,7 @@ public:
 			if (st[i] != nullptr)
 				delete (st[i]);
 		delete[] st;
+		//delete st;
 	}
 
 	void add(Object* new_el) {
@@ -56,15 +60,17 @@ public:
 				st_[i] = st[i];
 			st_[k] = new_el;
 			k = k + 1;
+			for (int i = k; i < n; ++i) /// добавлено
+				st_[i] = nullptr;
 			st = st_;
 		}
 	}
 	void insert(int ind, Object* new_obj) { 
 		// вставляем в конец и меняем местами с элементом, имеющим нужный индекс
 		add(new_obj);
-		Object* tmp = st[ind];
-		st[ind] = st[k];
-		st[k] = tmp;
+		Object* tmp = st[ind]; // поверхностное копирование
+		st[ind] = st[k-1];
+		st[k-1] = tmp;
 	}
 	void del(int ind) {
 		for (int i = ind; i < k - 1; ++i)
@@ -73,11 +79,12 @@ public:
 		st[k] = nullptr;
 	}
 	void delWithDelObj(int ind) {
-		// delete st[ind]; // ? будет ли корректно работать 
+		Object* tmp = st[ind];
 		for (int i = ind; i < k - 1; ++i)
 			st[i] = st[i + 1];
 		k = k - 1;
 		st[k] = nullptr;
+		delete tmp; // изменено
 	}
 	Object* get_el(int ind) {
 		return st[ind];
@@ -373,39 +380,52 @@ Object* someObj() { // возвращает объект случайно выбранного класса
 
 int main() {
 	unsigned int start_time = clock();
+
 	srand(time(NULL));
+
 	// создаем хранилище
 	Storage myStor(100);
+
 	// заполняем какими-то объектами
 	for (int i = 0; i < myStor.get_size(); ++i) {
 		myStor.add(someObj());
 		printf("\n");
 	}
 	printf("-----------------------------------------------\n");
+
 	// вызываем случайные методы у каждого объекта
-	for (int i = 0; i < myStor.get_count(); ++i)
+	for (int i = 0; i < myStor.get_count(); ++i) {
+		printf("%-3d:", i + 1);
 		(myStor.get_el(i))->someMethod();
+	}
 	printf("-----------------------------------------------\n");
+
 	// запускаем цикл из 1000 случайных действий(удаление и уничтожение объекта из хранилища, 
 	// добавление в конец или вставка по индексу нового объекта, запуск любого метода у случайного объекта)
-	for (int i = 0; i < 100; ++i) {
-		printf("%3d:", i);
+	for (int i = 0; i < 1000; ++i) {
+		printf("%-3d:", i+1);
 		int rand_num = rand() % 5; 
 		int ind = rand() % (myStor.get_count()); // индекс элемента, с которым что-то произойдет (кроме случая 2)
 		switch (rand_num)
 		{
-		case 0: {myStor.del(ind); break; }
-		//case 1: {myStor.delWithDelObj(ind); break; }
-		case 2: {myStor.add(someObj()); printf("\n"); break; }
-		default: {myStor.insert(ind, someObj()); break; }
-		case 1: {myStor.insert(ind,someObj()); break; }
-		//default: {(myStor.get_el(ind))->someMethod(); break; }
+		case 0: {printf("myStor.del(ind) "); myStor.del(ind); printf("\n"); break; }
+		case 1: {printf("myStor.delWithDelObj(ind) "); myStor.delWithDelObj(ind); break; }
+		case 2: {printf("myStor.add(someObj()) "); myStor.add(someObj());printf("\n"); break; }
+		case 3: {printf("myStor.insert(ind,someObj()) "); myStor.insert(ind,someObj()); printf("\n"); break; }
+		default: {printf("myStor.get_el(ind)->someMethod() ");
+			myStor.get_el(ind)->someMethod(); 
+			break; 
+		}
 		}
 	}
-
 	printf("-----------------------------------------------\n");
+
 	unsigned int end_time = clock();
 	unsigned int search_time = end_time - start_time;
 	printf("Time of program`s execution is %d ms\n", search_time);
+
+	printf("The count of objects in storage: %d\n", myStor.get_count());
+	printf("The size of storage: %d\n", myStor.get_size());
+
 	return 0;
 }

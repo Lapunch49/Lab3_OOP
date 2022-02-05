@@ -27,7 +27,7 @@ private:
 public:
 	Storage() {
 		st = new Object* [1];
-		st[0] = nullptr; /// добавлено
+		st[0] = nullptr;
 		n = 1;
 		k = 0;
 	}
@@ -35,7 +35,7 @@ public:
 		st = new Object* [size];
 		n = size;
 		k = 0;
-		for (int i = 0; i < n; ++i) // ƒобавлено
+		for (int i = 0; i < n; ++i)
 			st[i] = nullptr;
 	}
 	~Storage()
@@ -84,7 +84,7 @@ public:
 			st[i] = st[i + 1];
 		k = k - 1;
 		st[k] = nullptr;
-		delete tmp; // изменено
+		delete tmp;
 	}
 	Object* get_el(int ind) {
 		return st[ind];
@@ -266,20 +266,29 @@ public:
 class Triangle : public Object {
 	int a,b,c; // длины сторон
 public:
+	bool check_abc(int a, int b, int c) {
+		if (a + b <= c || a + c <= b || c + b <= a)
+			return false;
+		else return true;
+	}
 	Triangle() {
 		printf("Triangle()");
 		a = rand() % 100;
 		b = rand() % 100;
 		c = rand() % 100;
+		int i = 0;
+		while (!check_abc(a, b, c) && i++<50) {
+			c = rand() % 100;
+		}
 	}
 	Triangle(int A, int B, int C) {
-		printf("Triangle(int A, int B, int C)");
-		a = rand() % 100;
-		b = rand() % 100;
-		c = rand() % 100;
-		if (A >= 0) a = A;
-		if (B >= 0) b = B;
-		if (C >= 0) c = C;
+		if (check_abc(A, B, C) && A >= 0 && B >= 0 && C >= 0) {
+			a = A;
+			b = B;
+			c = C;
+			printf("Triangle(int A, int B, int C)");
+		}
+		else Triangle::Triangle();
 	}
 	string classname() {
 		printf("Triangle::classname()\n");
@@ -299,9 +308,11 @@ public:
 	}
 	void set_abc(int a, int b, int c) {
 		printf("Triangle::set_abc(int a, int b, int c)\n");
-		this->a = a;
-		this->b = b;
-		this->c = c;
+		if (check_abc(a, b, c)) {
+			this->a = a;
+			this->b = b;
+			this->c = c;
+		}
 	}
 	int calc_perimeter() {
 		int P = a + b + c;
@@ -324,7 +335,7 @@ public:
 		if (S != 0 )
 			R = a * b * c / 4 / S;
 		printf("Triangle:: the radius of inscribed circle is %f\n", r);
-		printf("And the radius of circumscribed circle is %f\n", r);
+		printf("And the radius of circumscribed circle is %f\n", R);
 	}
 	~Triangle() {
 		printf("~Triangle()");

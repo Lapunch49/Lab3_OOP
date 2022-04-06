@@ -65,11 +65,13 @@ public:
 		}
 	}
 	void insert(int ind, Object* new_obj) { 
-		// вставл€ем в конец и мен€ем местами с элементом, имеющим нужный индекс
-		add(new_obj);
-		Object* tmp = st[ind]; // поверхностное копирование
-		st[ind] = st[k-1];
-		st[k-1] = tmp;
+		// сдвигаем элементы вправо, начина€ с ind, и вставл€ем элемент в получившеес€ место
+		if (ind < k) {
+			for (int i = k; i > ind; i--)
+				st[i] = st[i - 1];
+			st[ind] = new_obj;
+			k++;
+		} else add(new_obj);
 	}
 	void del(int ind) {
 		for (int i = ind; i < k - 1; ++i)
@@ -392,12 +394,15 @@ int main() {
 	for (int i = 0; i < 1000; ++i) {
 		printf("%-3d:", i+1);
 		int rand_num = rand() % 5; 
-		int ind = rand() % (myStor.get_count()); // индекс элемента, с которым что-то произойдет (кроме случа€ 2)
+		int ind;
+		if (myStor.get_count() == 0) ind = 0;
+		else ind = rand() % (myStor.get_count()); // индекс элемента, с которым что-то произойдет (кроме случа€ 2)
 		switch (rand_num)
 		{
 		case 0: {printf("myStor.del(ind) "); myStor.del(ind); printf("\n"); break; }
 		case 1: {printf("myStor.delWithDelObj(ind) "); myStor.delWithDelObj(ind); break; }
 		case 2: {printf("myStor.add(someObj()) "); myStor.add(someObj());printf("\n"); break; }
+		//case 3: {printf("myStor.add(someObj()) "); myStor.add(someObj()); printf("\n"); break; }
 		case 3: {printf("myStor.insert(ind,someObj()) "); myStor.insert(ind,someObj()); printf("\n"); break; }
 		default: {printf("myStor.get_el(ind)->someMethod() ");
 			myStor.get_el(ind)->someMethod(); 
